@@ -1,3 +1,4 @@
+// https://api.nasa.gov/
 import React, { useState, useEffect } from "react";
 import "./App.css";
 
@@ -13,12 +14,12 @@ const App = () => {
         hdurl: string;
         copyright?: string;
       }
-    | "pending"
+    | "initializing"
     | "error";
 
-  const currentDate = new Date().toLocaleDateString("en-CA");
+  const currentDate = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD
   const [date, setDate] = useState(currentDate);
-  const [response, setResponse] = useState<Response>("pending");
+  const [response, setResponse] = useState<Response>("initializing");
 
   const onDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = (event.target as HTMLButtonElement).value;
@@ -47,7 +48,7 @@ const App = () => {
 
   return (
     <div className="App">
-      <header className="App-header">
+      <header className="App-content">
         <>
           <h1>Astronomy Picture!</h1>
           <input
@@ -58,7 +59,7 @@ const App = () => {
               onDateChange(e)
             }
           />
-          {response !== "error" && response !== "pending" && (
+          {response !== "error" && response !== "initializing" && (
             <>
               <p>Date: {response.date}</p>
               <h4>Title: {response.title}</h4>
@@ -78,7 +79,7 @@ const App = () => {
               </div>
             </>
           )}
-          {response === "pending" && <p>Searching the api!</p>}
+          {response === "initializing" && <p>Searching the api!</p>}
           {response === "error" && (
             <>
               <p>
@@ -102,8 +103,8 @@ export default App;
 // letting us get data from a range of dates, access random dates,
 // see higher res photos, and even get video!
 // We could have an "I'm feeling lucky" button, for example.
-// This would be more work, but it could be cool to show some
-// of the most popular photos on one's birthday!
+// This would be more work, but it could be cool to show a list of
+// photos of the day where the day is one's birthday!
 
 // Error handling:
 // Would love to have stock photos in case there's an issue with the api
@@ -120,3 +121,6 @@ export default App;
 // and causes unnecessary api hits. There could be a 'submit' button.
 // I think it's more fun this way though!
 // Also, you can always look to improve your unit tests!
+
+// Limitations:
+// Web Service Rate Limits (Caching?)
