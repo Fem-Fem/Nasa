@@ -8,6 +8,10 @@ To be able to run:
 
 2. `cd` into folder and type: `npm install`
 
+3. Go to `https://api.nasa.gov/` and generate an api key
+
+4. Make a `.env` file in the root directory and in it put: `REACT_APP_NASA_API_KEY={insert_api_key_here}`
+
 ## Available Scripts
 
 In the project directory, you can run:
