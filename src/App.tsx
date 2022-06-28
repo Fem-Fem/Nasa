@@ -1,18 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 
-// Things that I would do as part of a broader project?
-// Display multiple pics at once, potentially?
-// Discuss input box? vs including button? debouncing?
-// ask users if they want to see low res or high res?
-// add explanation for choice of layout of response info
-// fan favorites!
-// loading
-// switch img?
-
 const App = () => {
-  const currentDate = new Date().toLocaleDateString("en-CA");
-
   type Response =
     | {
         date: string;
@@ -22,10 +11,12 @@ const App = () => {
         title: string;
         url: string;
         hdurl: string;
+        copyright?: string;
       }
     | "pending"
     | "error";
 
+  const currentDate = new Date().toLocaleDateString("en-CA");
   const [date, setDate] = useState(currentDate);
   const [response, setResponse] = useState<Response>("pending");
 
@@ -58,10 +49,11 @@ const App = () => {
     <div className="App">
       <header className="App-header">
         <>
-          <h1>Astronomy Picture of the Day</h1>
+          <h1>Astronomy Picture!</h1>
           <input
             type="date"
             id="start"
+            defaultValue={date}
             onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
               onDateChange(e)
             }
@@ -69,7 +61,12 @@ const App = () => {
           {response !== "error" && response !== "pending" && (
             <>
               <p>Date: {response.date}</p>
-              <h2>Title: {response.title}</h2>
+              <h4>Title: {response.title}</h4>
+              <h5>
+                Copyright:{" "}
+                {response.copyright ? response.copyright : "Public Domain!"}
+              </h5>
+
               <img src={response.url} alt={response.title} />
               <p className="explanation">Explanation: {response.explanation}</p>
               <p>Extra Info:</p>
@@ -97,3 +94,29 @@ const App = () => {
 };
 
 export default App;
+
+// Considerations for a broader project:
+
+// Features:
+// The api has a few different query parameters we can use,
+// letting us get data from a range of dates, access random dates,
+// see higher res photos, and even get video!
+// We could have an "I'm feeling lucky" button, for example.
+// This would be more work, but it could be cool to show some
+// of the most popular photos on one's birthday!
+
+// Error handling:
+// Would love to have stock photos in case there's an issue with the api
+// Like maybe star wars photos. There's a star wars joke to be made with
+// the error statement, but I can't think of one right now!
+
+// We could also show a specific error if someone picks a date
+// that's too far in the future or the past
+
+// Possible Improvements:
+// It's possible that we don't want to immediately search the api
+// upon any date change. Currently whenever a user changes the date input
+// we search a new url, but it's possible that it's annoying to the user
+// and causes unnecessary api hits. There could be a 'submit' button.
+// I think it's more fun this way though!
+// Also, you can always look to improve your unit tests!
