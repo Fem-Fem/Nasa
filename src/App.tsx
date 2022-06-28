@@ -1,25 +1,17 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 
-// Next steps:
-
-// edit error handling from switch to if case
-// add styling
-// add unit testing
-
 // Things that I would do as part of a broader project?
 // Display multiple pics at once, potentially?
-// Linting, TS considerations?
 // Discuss input box? vs including button? debouncing?
 // ask users if they want to see low res or high res?
 // add explanation for choice of layout of response info
 // fan favorites!
 // loading
+// switch img?
 
 const App = () => {
   const currentDate = new Date().toLocaleDateString("en-CA");
-  const apiKey = "api_key=FeONMuyEyNh9VfhKSPRFtD9QdKM01D3LKOyEDhjF";
-  const baseUrl = "https://api.nasa.gov/planetary/apod?" + apiKey;
 
   type Response =
     | {
@@ -31,12 +23,11 @@ const App = () => {
         url: string;
         hdurl: string;
       }
-    | null
+    | "pending"
     | "error";
 
   const [date, setDate] = useState(currentDate);
-  const [url, setUrl] = useState(baseUrl);
-  const [response, setResponse] = useState<Response>(null);
+  const [response, setResponse] = useState<Response>("pending");
 
   const onDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = (event.target as HTMLButtonElement).value;
@@ -44,29 +35,30 @@ const App = () => {
   };
 
   useEffect(() => {
-    let dateParameter = "date=" + date;
-    const url =
-      "https://api.nasa.gov/planetary/apod?" + dateParameter + "&" + apiKey;
+    let dateParameter = `date=${date}`;
+    const apiKey = `api_key=${process.env.REACT_APP_NASA_API_KEY}`;
+    const url = `https://api.nasa.gov/planetary/apod?${dateParameter}&${apiKey}`;
 
-    setUrl(url);
-  }, [date]);
-
-  useEffect(() => {
     fetch(url)
       .then(async (data) => {
-        setResponse(await data.json());
+        if (data.ok) {
+          setResponse(await data.json());
+        } else {
+          setResponse("error");
+          console.error(data);
+        }
       })
       .catch((error) => {
-        setResponse(error);
+        setResponse("error");
         console.error(error);
       });
-  }, [url]);
+  }, [date]);
 
   return (
     <div className="App">
       <header className="App-header">
         <>
-          <p>Astronomy Picture of the Day</p>
+          <h1>Astronomy Picture of the Day</h1>
           <input
             type="date"
             id="start"
@@ -74,22 +66,23 @@ const App = () => {
               onDateChange(e)
             }
           />
-          {response && response !== "error" ? (
+          {response !== "error" && response !== "pending" && (
             <>
               <p>Date: {response.date}</p>
-              <p>Title: {response.title}</p>
-              <img src={response.url} />
+              <h2>Title: {response.title}</h2>
+              <img src={response.url} alt={response.title} />
               <p className="explanation">Explanation: {response.explanation}</p>
-              <p>Media Type: {response.media_type}</p>
-              <p>Service Version: {response.service_version}</p>
-              <p>Url: {response.url}</p>
-              <p>HDUrl: {response.hdurl}</p>
+              <p>Extra Info:</p>
+              <div className="extraInfo">
+                <p>Media Type: {response.media_type}</p>
+                <p>Service Version: {response.service_version}</p>
+                <p>Url: {response.url}</p>
+                <p>HDUrl: {response.hdurl}</p>
+              </div>
             </>
-          ) : response !== "error" ? (
-            <>
-              <p>Searching the api!</p>
-            </>
-          ) : (
+          )}
+          {response === "pending" && <p>Searching the api!</p>}
+          {response === "error" && (
             <>
               <p>
                 Sorry! An issue appeared with the api - please refresh and try

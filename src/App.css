@@ -40,3 +40,8 @@
 .explanation {
   width: 900px;
 }
+
+.extraInfo {
+  font-size: 12px;
+  padding-bottom: 50px;
+}
