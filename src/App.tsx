@@ -1,21 +1,24 @@
 // https://api.nasa.gov/
 import React, { useState, useEffect } from "react";
 import "./App.css";
+import Nasa from "./Nasa/Nasa";
+import ApiDelays from "./ApiDelays/ApiDelays";
+
+export type validResponse = {
+  date: string;
+  explanation: string;
+  media_type: string;
+  service_version: string;
+  title: string;
+  url: string;
+  hdurl: string;
+  copyright?: string;
+};
+
+export type DelayHandling = "initializing" | "error";
 
 const App = () => {
-  type Response =
-    | {
-        date: string;
-        explanation: string;
-        media_type: string;
-        service_version: string;
-        title: string;
-        url: string;
-        hdurl: string;
-        copyright?: string;
-      }
-    | "initializing"
-    | "error";
+  type Response = validResponse | DelayHandling;
 
   const currentDate = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD
   const [date, setDate] = useState(currentDate);
@@ -59,34 +62,11 @@ const App = () => {
               onDateChange(e)
             }
           />
-          {response !== "error" && response !== "initializing" && (
-            <>
-              <p>Date: {response.date}</p>
-              <h4>Title: {response.title}</h4>
-              <h5>
-                Copyright:{" "}
-                {response.copyright ? response.copyright : "Public Domain!"}
-              </h5>
-
-              <img src={response.url} alt={response.title} />
-              <p className="explanation">Explanation: {response.explanation}</p>
-              <p>Extra Info:</p>
-              <div className="extraInfo">
-                <p>Media Type: {response.media_type}</p>
-                <p>Service Version: {response.service_version}</p>
-                <p>Url: {response.url}</p>
-                <p>HDUrl: {response.hdurl}</p>
-              </div>
-            </>
-          )}
-          {response === "initializing" && <p>Searching the api!</p>}
-          {response === "error" && (
-            <>
-              <p>
-                Sorry! An issue appeared with the api - please refresh and try
-                again!
-              </p>
-            </>
+          {console.log(response)}
+          {response !== "error" && response !== "initializing" ? (
+            <Nasa {...response} />
+          ) : (
+            <ApiDelays response={response} />
           )}
         </>
       </header>
