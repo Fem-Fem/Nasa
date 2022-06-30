@@ -62,7 +62,6 @@ const App = () => {
               onDateChange(e)
             }
           />
-          {console.log(response)}
           {response !== "error" && response !== "initializing" ? (
             <Nasa {...response} />
           ) : (
